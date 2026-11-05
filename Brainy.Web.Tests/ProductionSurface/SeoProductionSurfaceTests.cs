@@ -17,8 +17,7 @@ public sealed class SeoProductionSurfaceTests(BrainyWebApplicationFactory factor
         { "/changelog", "Changelog — Brainy", "See what is new in Brainy" },
         { "/privacy", "Privacy Policy — Brainy", "What Brainy stores" },
         { "/terms", "Terms of Service — Brainy", "The terms that govern using Brainy" },
-        { "/acceptable-use", "Acceptable Use Policy — Brainy", "What Brainy must not be used for" },
-        { "/ai-transparency", "AI & Your Data — Brainy", "Exactly what leaves Brainy when an AI feature runs" }
+        { "/acceptable-use", "Acceptable Use Policy — Brainy", "What Brainy must not be used for" }
     };
 
     [Theory]
@@ -109,8 +108,7 @@ public sealed class SeoProductionSurfaceTests(BrainyWebApplicationFactory factor
             "https://localhost/changelog",
             "https://localhost/privacy",
             "https://localhost/terms",
-            "https://localhost/acceptable-use",
-            "https://localhost/ai-transparency");
+            "https://localhost/acceptable-use");
         content.Should().NotContain("/Account");
         content.Should().NotContain("/today");
     }

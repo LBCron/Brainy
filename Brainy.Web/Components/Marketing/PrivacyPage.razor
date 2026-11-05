@@ -67,18 +67,23 @@
 
             <h2>Subprocessors</h2>
             <p>
-                Brainy's core note-taking, organizing and task features do not send your content to any
-                third party. The only subprocessor Brainy can be configured to use is an <strong>AI provider</strong>,
-                and only for the specific AI actions you trigger:
+                Brainy does not send your note, task or project content to any third-party subprocessor.
             </p>
-            <ul>
-                <li><strong>OpenAI</strong> (api.openai.com) &mdash; when the deployment is configured with the OpenAI provider.</li>
-                <li><strong>Azure OpenAI Service</strong> &mdash; when the deployment is configured with the Azure OpenAI provider.</li>
-            </ul>
+
+            <h2>Product analytics</h2>
             <p>
-                By default, AI is <strong>off</strong> (provider "None") and no note or task content ever leaves
-                Brainy for AI processing. See <a href="/ai-transparency">AI &amp; Your Data</a> for exactly what
-                is sent when AI is enabled and used.
+                Brainy records a small set of first-party, privacy-safe usage events (for example "a note was
+                captured" or "a search returned no results") to understand which features work and to fix
+                problems. Events never contain your note, task or output content or your search text, are tied
+                to your account so they can be exported and deleted with your data, and are never shared with
+                an external analytics vendor or used for advertising.
+            </p>
+            <p>
+                <strong>Legal basis:</strong> legitimate interest (GDPR Art. 6(1)(f)) in operating and improving
+                the product. This tracking is on by default, and you can object at any time by switching it off
+                under <a href="/Account/Manage">Account and data</a>; doing so stops all future event recording
+                for your account immediately. The complete list of events, their purpose and retention is in the
+                <a href="/data-dictionary">analytics data dictionary</a>.
             </p>
 
             <h2>Retention</h2>
@@ -109,8 +114,8 @@
                 <li>
                     <strong>Export your data</strong> &mdash; downloads a versioned JSON archive of your notes,
                     projects, tasks, areas, resources, goals, outputs, relationships, preferences and stored
-                    images. Account credentials, password hashes, session tokens, and any configured AI provider
-                    keys are excluded.
+                    images. Account credentials, password hashes, session tokens, and application secrets
+                    are excluded.
                 </li>
                 <li>
                     <strong>Delete your account</strong> &mdash; permanently erases your account and the data
@@ -120,7 +125,7 @@
 
             <h2>Questions</h2>
             <p>
-                Marketing and in-product claims about privacy and AI behavior are maintained alongside this page
+                Marketing and in-product claims about privacy are maintained alongside this page
                 and reviewed against the actual implementation before publication. If something on this page looks
                 inconsistent with how Brainy actually behaves, treat the implementation as needing a fix and report
                 it.

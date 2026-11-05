@@ -32,7 +32,6 @@ public static class PaletteCommandCatalog
         Nav("nav-archives", "Go to Archives", "/archives", Icons.Material.Outlined.Archive),
         Nav("nav-pulse", "Go to Pulse", "/pulse", Icons.Material.Outlined.Insights, "analytics", "streaks"),
         Nav("nav-outputs", "Go to Outputs", "/outputs", Icons.Material.Outlined.Output, "deliverables"),
-        Nav("nav-llm", "Go to LLM context export", "/llm", Icons.Material.Outlined.Psychology, "llm", "context", "export", "prompt"),
 
         // ── Creation ─────────────────────────────────────────────────────
         Create("create-note", "New note", "/notes?new=true", Icons.Material.Outlined.NoteAdd),

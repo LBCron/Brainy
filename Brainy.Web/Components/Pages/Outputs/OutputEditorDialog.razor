@@ -3,11 +3,9 @@
 @using Brainy.Application.DTOs.Goals
 @using Brainy.Application.DTOs.Outputs
 @using Brainy.Application.DTOs.Projects
-@using Brainy.Application.Interfaces.AI
 @using Brainy.Application.Interfaces.Services
 @using Brainy.Domain.Enums
 @inject IOutputService OutputService
-@inject IDialogService DialogService
 @inject IAreaService AreaService
 @inject IProjectService ProjectService
 @inject IGoalService GoalService
@@ -76,16 +74,6 @@
                 </MudSelect>
 
                 <div class="oed-content-wrap">
-                    <div class="oed-ai-row">
-                        <MudButton Size="Size.Small"
-                                   Variant="Variant.Outlined"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.AutoAwesome"
-                                   OnClick="OpenAiGenerationDialogAsync"
-                                   Disabled="@string.IsNullOrWhiteSpace(_title)">
-                            ✨ Generate with AI
-                        </MudButton>
-                    </div>
                     <MudTextField @bind-Value="_content" Label="Content (Markdown supported)"
                                   Lines="10" Variant="Variant.Outlined" Margin="Margin.Dense" />
                 </div>
@@ -108,7 +96,6 @@
 <style>
 .oed-fields { display: flex; flex-direction: column; gap: .85rem; padding-top: .25rem; }
 .oed-content-wrap { display: flex; flex-direction: column; gap: 0.4rem; }
-.oed-ai-row { display: flex; justify-content: flex-end; }
 </style>
 
 @code {
@@ -138,7 +125,6 @@
     private Guid? _projectId;
     private Guid? _goalId;
     private string _content = "";
-    private GeneratedOutputDraftDto? _generatedDraft;
     private byte[]? _rowVersion;
     private List<Guid> _sourceNoteIds = [];
 
@@ -205,9 +191,6 @@
                 await OutputService.UpdateAsync(new UpdateOutputDto(
                     ExistingOutput.Id, _title, _description, _type, _status,
                     _content, _projectId, _areaId, _goalId,
-                    IsAiGenerated: _generatedDraft is null ? null : true,
-                    Model: _generatedDraft?.Model,
-                    PromptVersion: _generatedDraft?.PromptVersion,
                     SourceNoteIds: GetSourceNoteIdsOrNull(),
                     RowVersion: _rowVersion));
                 Snackbar.Add("Output updated.", Severity.Success);
@@ -216,9 +199,6 @@
             {
                 await OutputService.CreateAsync(new CreateOutputDto(
                     _title, _description, _type, _content, _projectId, _areaId, _goalId,
-                    IsAiGenerated: _generatedDraft is not null,
-                    Model: _generatedDraft?.Model,
-                    PromptVersion: _generatedDraft?.PromptVersion,
                     SourceNoteIds: GetSourceNoteIdsOrNull()));
                 Snackbar.Add("Output created.", Severity.Success);
             }
@@ -240,35 +220,6 @@
 
     private void Cancel() => MudDialog.Cancel();
 
-    /// <summary>Opens the AI generation dialog; on success, populates the content editor with the draft.</summary>
-    private async Task OpenAiGenerationDialogAsync()
-    {
-        var parameters = new DialogParameters<OutputAiGenerationDialog>
-        {
-            { x => x.OutputTitle, _title            },
-            { x => x.OutputType,  FormatType(_type) }
-        };
-
-        var opts = new DialogOptions
-        {
-            MaxWidth      = MaxWidth.Small,
-            FullWidth     = true,
-            BackdropClick = false,
-            CloseButton   = true
-        };
-
-        var dialog = await DialogService.ShowAsync<OutputAiGenerationDialog>("", parameters, opts);
-        var result = await dialog.Result;
-
-        if (result is { Canceled: false, Data: GeneratedOutputDraftDto draft })
-        {
-            _generatedDraft = draft;
-            _content = draft.Content;
-            MergeSourceNoteIds(draft.SourceNoteIds);
-            Snackbar.Add("AI draft generated — review and save when ready.", Severity.Info);
-        }
-    }
-
     private IReadOnlyList<Guid>? GetSourceNoteIdsOrNull()
     {
         var distinctIds = _sourceNoteIds
@@ -277,18 +228,6 @@
             .ToList();
 
         return distinctIds.Count == 0 ? null : distinctIds;
-    }
-
-    private void MergeSourceNoteIds(IReadOnlyList<Guid>? sourceNoteIds)
-    {
-        if (sourceNoteIds is null || sourceNoteIds.Count == 0)
-            return;
-
-        _sourceNoteIds = _sourceNoteIds
-            .Concat(sourceNoteIds)
-            .Where(id => id != Guid.Empty)
-            .Distinct()
-            .ToList();
     }
 
     internal static string FormatType(OutputType type) => type switch

@@ -401,8 +401,8 @@ app.Use(async (context, next) =>
     context.Response.Headers["Permissions-Policy"] = "camera=(), geolocation=(), payment=(), usb=()";
     context.Response.Headers.ContentSecurityPolicy =
         "default-src 'self'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; " +
-        "img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com; " +
-        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+        "img-src 'self' data: blob:; font-src 'self' data:; " +
+        "style-src 'self' 'unsafe-inline'; " +
         "script-src 'self' 'unsafe-inline'; connect-src 'self' https: wss:; object-src 'none'";
     await next();
 });

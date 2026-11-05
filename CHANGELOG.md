@@ -1,5 +1,18 @@
 # Changelog
 
+## [8.3.0] - 2026-11-05
+
+### Changed
+
+- **Self-hosted fonts.** Fraunces and Hanken Grotesk are now served from our own origin, so visitor IPs are no longer sent to Google. The Content-Security-Policy no longer allows `fonts.googleapis.com` or `fonts.gstatic.com` (#344).
+- **Analytics disclosure.** The privacy policy now documents first-party product analytics, its legitimate-interest basis and the opt-out, and links to the analytics data dictionary (#348).
+
+### Removed
+
+- **AI features and wording.** Removed the AI surfaces from the app and marketing pages (note editor AI actions, output AI generation, the LLM page, AI allowance, `/ai-transparency`) so that copy matches shipped behaviour (#347).
+
+---
+
 ## [8.2.1] - 2026-10-21
 
 ### Added

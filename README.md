@@ -21,9 +21,6 @@ Brainy is an open source second-brain application built with .NET 10, Blazor, Mu
 
 Capture notes and ideas, organize them into projects, areas, resources, and archives, then retrieve, summarize, and reuse that knowledge in real work.
 
-> [!NOTE]
-> AI assistant integration is implemented behind an application service boundary, but the default configuration disables AI features. Set an AI provider explicitly before using AI-assisted workflows.
-
 ## Hosted or self-hosted
 
 Brainy is available as a hosted service at **[brainy-me.com](https://www.brainy-me.com)**, and it's also fully open source: you can run your own instance from this repository.
@@ -34,8 +31,6 @@ To self-host, you need a SQL Server database (see [Getting started](#getting-sta
 - The shipped `appsettings.json` also uses `Billing:Provider = None`, so a self-hosted production instance runs without any payment provider. The hosted service sets `Billing__Provider=Stripe` as an App Service application setting.
 - To run your own Stripe billing, set `Billing__Provider=Stripe` plus the Stripe settings under `Billing` (the app refuses to start until they are all present).
 
-AI features are disabled by default as well (see the note above).
-
 ## Features
 
 - **Today dashboard** for current work, deadlines, overdue tasks, and project progress.
@@ -44,7 +39,7 @@ AI features are disabled by default as well (see the note above).
 - **Notes and knowledge distillation** with highlights, summaries, sources, images, related-note relationships, and action-item promotion into project tasks.
 - **Tasks and planning** with priorities, due dates, subtasks, recurring occurrences, archive/restore, project context, and prerequisite management with cycle protection.
 - **Goals and milestones** for connecting longer-term outcomes to active projects.
-- **Outputs** for turning stored knowledge into reusable Markdown deliverables, with preview, copy, download, and AI provenance.
+- **Outputs** for turning stored knowledge into reusable Markdown deliverables, with preview, copy, and download.
 - **Search and retrieval** across notes, outputs, projects, tasks, areas, resources, ideas, and goals.
 - **Per-user data isolation** enforced through ASP.NET Core Identity and application services.
 - **Data portability** through a versioned JSON export of the signed-in user's content and relationships.
@@ -136,7 +131,7 @@ Sign-in screen for returning users.
 | Project | Responsibility |
 | --- | --- |
 | `Brainy.Domain` | Domain entities, enums, and shared domain contracts. |
-| `Brainy.Application` | DTOs, service interfaces, business workflows, and AI abstractions. |
+| `Brainy.Application` | DTOs, service interfaces, and business workflows. |
 | `Brainy.Data` | Entity Framework Core context, SQL Server persistence, Identity, configurations, and migrations. |
 | `Brainy.Web` | Blazor Web App, Interactive Server components, authentication endpoints, and the MudBlazor interface. |
 | `Brainy.Application.Tests` | xUnit assertion tests for application services. |

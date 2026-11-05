@@ -145,7 +145,6 @@ public sealed class ProductionSurfaceTests(BrainyWebApplicationFactory factory)
     [InlineData("/privacy", "Privacy Policy")]
     [InlineData("/terms", "Terms of Service")]
     [InlineData("/acceptable-use", "Acceptable Use Policy")]
-    [InlineData("/ai-transparency", "AI &amp; your data")]
     public async Task AnonymousTrustPagesRenderStaticallyWithDraftNotice(string path, string headingFragment)
     {
         using var client = factory.CreateClient(new()
@@ -177,7 +176,6 @@ public sealed class ProductionSurfaceTests(BrainyWebApplicationFactory factory)
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         content.Should().Contain("href=\"/Account/Manage\"");
-        content.Should().Contain("href=\"/ai-transparency\"");
     }
 
     [Fact]
@@ -196,7 +194,7 @@ public sealed class ProductionSurfaceTests(BrainyWebApplicationFactory factory)
         content.Should().Contain("href=\"/privacy\"");
         content.Should().Contain("href=\"/terms\"");
         content.Should().Contain("href=\"/acceptable-use\"");
-        content.Should().Contain("href=\"/ai-transparency\"");
+        content.Should().NotContain("/ai-transparency");
     }
 
     [Fact]
@@ -246,22 +244,6 @@ public sealed class ProductionSurfaceTests(BrainyWebApplicationFactory factory)
         response.StatusCode.Should().Be(HttpStatusCode.Redirect);
         response.Headers.Location?.AbsolutePath.Should().Be("/Account/Login");
         response.Headers.Location?.Query.Should().Contain("ReturnUrl=%2Ftoday%2Fweek");
-    }
-
-    [Fact]
-    public async Task LlmFocusPageRequiresAuthentication()
-    {
-        using var client = factory.CreateClient(new()
-        {
-            AllowAutoRedirect = false,
-            BaseAddress = new Uri("https://localhost")
-        });
-
-        using var response = await client.GetAsync("/llm");
-
-        response.StatusCode.Should().Be(HttpStatusCode.Redirect);
-        response.Headers.Location?.AbsolutePath.Should().Be("/Account/Login");
-        response.Headers.Location?.Query.Should().Contain("ReturnUrl=%2Fllm");
     }
 
     [Fact]

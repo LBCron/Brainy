@@ -15,8 +15,7 @@ public static class SeoEndpoints
         new("/changelog", "weekly", "0.6"),
         new("/privacy", "yearly", "0.3"),
         new("/terms", "yearly", "0.3"),
-        new("/acceptable-use", "yearly", "0.3"),
-        new("/ai-transparency", "monthly", "0.5")
+        new("/acceptable-use", "yearly", "0.3")
     ];
 
     /// <summary>Maps the robots and sitemap endpoints.</summary>
@@ -70,7 +69,6 @@ public static class SeoEndpoints
         "Disallow: /ideas",
         "Disallow: /pulse",
         "Disallow: /week",
-        "Disallow: /llm",
         $"Sitemap: {BuildAbsoluteUrl(options, "/sitemap.xml")}",
         string.Empty
     ]);

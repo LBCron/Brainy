@@ -61,12 +61,6 @@ else
                     <span class="od-badge od-status--@_detail.Status.ToString().ToLowerInvariant()">
                         @OutputEditorDialog.FormatStatus(_detail.Status)
                     </span>
-                    @if (_detail.IsAiGenerated)
-                    {
-                        <span class="od-badge" style="background:rgba(103,58,183,.1);color:#4527a0;border:1px solid rgba(103,58,183,.2);">
-                            AI Generated
-                        </span>
-                    }
                     @if (_detail.IsArchived)
                     {
                         <MudChip T="string" Color="Color.Warning" Size="Size.Small">Archived</MudChip>
@@ -108,17 +102,6 @@ else
                         <span class="od-meta-item" style="color:#1b5e20;">
                             Published <UserLocalTime Utc="_detail.PublishedDate" />
                         </span>
-                    }
-                    @if (_detail.IsAiGenerated && !string.IsNullOrWhiteSpace(_detail.Model))
-                    {
-                        <span class="od-meta-item">
-                            <MudIcon Icon="@Icons.Material.Outlined.AutoAwesome" Style="font-size:0.75rem;opacity:.6;" />
-                            Model @_detail.Model
-                        </span>
-                    }
-                    @if (_detail.IsAiGenerated && !string.IsNullOrWhiteSpace(_detail.PromptVersion))
-                    {
-                        <span class="od-meta-item">Prompt @_detail.PromptVersion</span>
                     }
                     @if (_detail.IsArchived && _detail.ArchivedDate.HasValue)
                     {
@@ -530,7 +513,7 @@ body { font-family: var(--font-body); }
                 Lead = "Output Detail is the workspace for shaping one deliverable from content and linked source notes through publishable status.",
                 Points =
                 [
-                    "Review type, status, AI-generated marker, and project or area context.",
+                    "Review type, status, and project or area context.",
                     "Read the description and current content in focused panels.",
                     "Connect source notes so the output remains grounded in your second brain.",
                     "Edit, publish, archive, or restore the output from the header."

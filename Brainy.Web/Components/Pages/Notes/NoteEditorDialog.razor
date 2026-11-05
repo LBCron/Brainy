@@ -8,7 +8,6 @@
 @using Brainy.Application.DTOs.Outputs
 @using Brainy.Application.DTOs.RelatedNotes
 @using Brainy.Application.DTOs.Summaries
-@using Brainy.Application.Interfaces.AI
 @using Brainy.Application.Interfaces.Services
 @using Brainy.Domain.Enums
 @using Brainy.Web.Components.Pages.Outputs
@@ -29,7 +28,6 @@
 @inject IActionItemService ActionItemService
 @inject INoteRevisionService RevisionService
 @inject IOutputService OutputService
-@inject IAiAssistant AiAssistant
 @inject IJSRuntime JS
 
 <MudDialog>
@@ -413,7 +411,7 @@
                                     }
                                 </div>
 
-                                @* ── Related Notes (AI-free similarity) ── *@
+                                @* ── Related Notes ── *@
                                 <div class="note-editor__sidebar-section">
                                     <div class="ned-related__header">
                                         <h3 class="note-editor__sidebar-heading">Related Notes</h3>
@@ -449,74 +447,6 @@
                                                 </button>
                                             }
                                         </div>
-                                    }
-                                </div>
-
-                                @* ── Check Duplicates ── *@
-                                <div class="note-editor__sidebar-section">
-                                    <div class="ned-dup__header">
-                                        <div class="ned-ai-provenance">
-                                            <h3 class="note-editor__sidebar-heading">🔁 Check Duplicates</h3>
-                                            <span class="ned-ai-provenance__badge ned-summaries__ai-badge ned-links__type-badge">
-                                                <MudIcon Icon="@Icons.Material.Outlined.AutoAwesome"
-                                                         Size="Size.Small"
-                                                         Class="ned-ai-provenance__badge-icon" />
-                                                AI
-                                            </span>
-                                            <MudTooltip Text="@GetDuplicateCheckProvenanceTooltip()">
-                                                <MudIconButton Icon="@Icons.Material.Filled.Info"
-                                                               Size="Size.Small"
-                                                               Class="ned-ai-provenance__info"
-                                                               aria-label="Duplicate detection provenance" />
-                                            </MudTooltip>
-                                        </div>
-                                    </div>
-                                    <MudButton Variant="Variant.Outlined"
-                                               Size="Size.Small"
-                                               Disabled="_dupChecking"
-                                               OnClick="CheckDuplicatesAsync"
-                                               Class="ned-dup__btn mb-2">
-                                        @if (_dupChecking)
-                                        {
-                                            <MudProgressCircular Indeterminate="true"
-                                                                 Size="Size.Small"
-                                                                 Color="Color.Default"
-                                                                 Class="mr-1" />
-                                            <span>Checking…</span>
-                                        }
-                                        else
-                                        {
-                                            <span>Check for duplicates</span>
-                                        }
-                                    </MudButton>
-                                    @if (_dupChecked && !_dupChecking)
-                                    {
-                                        @if (_duplicates.Count == 0)
-                                        {
-                                            <p class="ned-links__empty">No duplicates found ✓</p>
-                                        }
-                                        else
-                                        {
-                                            <div class="ned-dup__list">
-                                                @foreach (var dup in _duplicates)
-                                                {
-                                                    var dupId = dup.Id;
-                                                    <div class="ned-dup__item">
-                                                        <span class="ned-dup__title">@dup.Title</span>
-                                                        <div class="ned-dup__actions">
-                                                            <MudButton Size="Size.Small"
-                                                                       Variant="Variant.Text"
-                                                                       Color="Color.Primary"
-                                                                       OnClick="() => LinkAsSimilarAsync(dupId)">Link as Similar</MudButton>
-                                                            <MudButton Size="Size.Small"
-                                                                       Variant="Variant.Text"
-                                                                       Color="Color.Default"
-                                                                       OnClick="() => DismissDuplicate(dupId)">Dismiss</MudButton>
-                                                        </div>
-                                                    </div>
-                                                }
-                                            </div>
-                                        }
                                     }
                                 </div>
 
@@ -634,22 +564,6 @@
                                 <div class="note-editor__sidebar-section">
                                     <div class="ned-links__header">
                                         <h3 class="note-editor__sidebar-heading">Actions</h3>
-                                        @if (_actionsExtracting)
-                                        {
-                                            <MudProgressCircular Indeterminate="true"
-                                                                 Size="Size.Small"
-                                                                 Color="Color.Primary"
-                                                                 Class="ned-links__add-btn" />
-                                        }
-                                        else
-                                        {
-                                            <button type="button"
-                                                    class="ned-links__add-btn"
-                                                    title="@(_isDirty ? "Save note changes before AI extraction" : "Extract actions with AI")"
-                                                    aria-label="Extract actions with AI"
-                                                    disabled="@(_originalNote is null || _isDirty || _actionsLoading)"
-                                                    @onclick="ExtractActionsAsync">✨</button>
-                                        }
                                         <button type="button"
                                                 class="ned-links__add-btn"
                                                 title="Add action"
@@ -688,23 +602,6 @@
                                                                    OnClick="() => ToggleActionStatusAsync(action)" />
                                                     <div class="ned-highlights__content">
                                                         <span class="ned-highlights__text">@action.Title</span>
-                                                        @if (action.IsAiGenerated)
-                                                        {
-                                                            <span class="ned-ai-provenance">
-                                                                <span class="ned-ai-provenance__badge ned-summaries__ai-badge ned-links__type-badge">
-                                                                    <MudIcon Icon="@Icons.Material.Outlined.AutoAwesome"
-                                                                             Size="Size.Small"
-                                                                             Class="ned-ai-provenance__badge-icon" />
-                                                                    AI
-                                                                </span>
-                                                                <MudTooltip Text="@GetAiGeneratedActionTooltip(action)">
-                                                                    <MudIconButton Icon="@Icons.Material.Filled.Info"
-                                                                                   Size="Size.Small"
-                                                                                   Class="ned-ai-provenance__info"
-                                                                                   aria-label="@($"Action provenance for {action.Title}")" />
-                                                                </MudTooltip>
-                                                            </span>
-                                                        }
                                                         @if (action.TaskItemId.HasValue)
                                                         {
                                                             <button type="button"
@@ -741,23 +638,6 @@
                                 <div class="note-editor__sidebar-section">
                                     <div class="ned-links__header">
                                         <h3 class="note-editor__sidebar-heading">Summary Layers</h3>
-                                        @if (_summaryGenerating)
-                                        {
-                                            <MudProgressCircular Indeterminate="true"
-                                                                 Size="Size.Small"
-                                                                 Color="Color.Primary"
-                                                                 Class="ned-links__add-btn" />
-                                        }
-                                        else
-                                        {
-                                            <button type="button"
-                                                    class="ned-links__add-btn"
-                                                    title="Generate AI summary"
-                                                    disabled="@(_originalNote is null)"
-                                                    @onclick="GenerateAiSummaryAsync">
-                                                ✨
-                                            </button>
-                                        }
                                         <button type="button"
                                                 class="ned-links__add-btn"
                                                 title="Add summary layer"
@@ -810,23 +690,6 @@
                                             @foreach (var s in _summaries)
                                             {
                                                 <div class="ned-summaries__item ned-links__item">
-                                                    @if (s.IsAiGenerated)
-                                                    {
-                                                        <span class="ned-ai-provenance">
-                                                            <span class="ned-ai-provenance__badge ned-summaries__ai-badge ned-links__type-badge">
-                                                                <MudIcon Icon="@Icons.Material.Outlined.AutoAwesome"
-                                                                         Size="Size.Small"
-                                                                         Class="ned-ai-provenance__badge-icon" />
-                                                                AI
-                                                            </span>
-                                                            <MudTooltip Text="@GetAiGeneratedSummaryTooltip(s)">
-                                                                <MudIconButton Icon="@Icons.Material.Filled.Info"
-                                                                               Size="Size.Small"
-                                                                               Class="ned-ai-provenance__info"
-                                                                               aria-label="Summary provenance" />
-                                                            </MudTooltip>
-                                                        </span>
-                                                    }
                                                     <span class="ned-summaries__content">@s.Content</span>
                                                     <MudTooltip Text="Create output from this summary">
                                                         <MudIconButton Icon="@Icons.Material.Outlined.PostAdd"
@@ -1006,28 +869,6 @@
         line-height: 1;
     }
 
-    .ned-ai-provenance {
-        display: inline-flex;
-        align-items: center;
-        gap: .2rem;
-        flex-wrap: wrap;
-    }
-
-    .ned-ai-provenance__badge {
-        gap: .25rem;
-    }
-
-    .ned-ai-provenance__badge-icon {
-        font-size: .8rem !important;
-    }
-
-    .ned-ai-provenance__info {
-        width: 1.25rem;
-        height: 1.25rem;
-        padding: 0;
-        color: rgba(35, 31, 32, 0.55);
-    }
-
     .ned-output-links__list {
         display: flex;
         flex-direction: column;
@@ -1188,27 +1029,16 @@
     // ── Summary layers ──
     private IReadOnlyList<SummaryDto> _summaries = [];
     private bool _summariesLoading;
-    private bool _summaryGenerating;
     private bool _showAddSummaryForm;
     private string _newSummaryContent = string.Empty;
 
     // ── Actions ──
     private IReadOnlyList<ActionItemDto> _actions = [];
     private bool _actionsLoading;
-    private bool _actionsExtracting;
     private IReadOnlyList<OutputDto> _linkedOutputs = [];
     private bool _linkedOutputsLoading;
     // ── Version history ──
     private int _revisionCount;
-
-    private string? _duplicateCheckModel;
-    private string? _duplicateCheckPromptVersion;
-    private DateTime? _duplicateCheckGeneratedAtUtc;
-
-    // ── Duplicate detection ──
-    private bool _dupChecking;
-    private bool _dupChecked;
-    private List<(Guid Id, string Title)> _duplicates = [];
 
     private static readonly Regex ExcessBlankLinesRegex = new(@"\n{3,}", RegexOptions.Compiled);
     private IReadOnlyList<string> ParsedTags =>
@@ -1219,11 +1049,6 @@
             .ToList();
 
     private bool HasUnsavedChanges => _isDirty || _pendingImageIds.Count > 0 || _imageIdsPendingDeletion.Count > 0;
-    private bool HasDuplicateCheckProvenance =>
-        !string.IsNullOrWhiteSpace(_duplicateCheckModel) ||
-        !string.IsNullOrWhiteSpace(_duplicateCheckPromptVersion) ||
-        _duplicateCheckGeneratedAtUtc.HasValue;
-
     protected override async Task OnInitializedAsync()
     {
         if (NoteId.HasValue)
@@ -1922,13 +1747,6 @@
         _ => $"L{layer}"
     };
 
-    private string GetAiGeneratedActionTooltip(ActionItemDto action) =>
-        BuildAiProvenanceTooltip(
-            action.Model,
-            action.PromptVersion,
-            action.CreatedAtUtc,
-            sourceLabel: "AI-extracted action");
-
     private static string BuildOutputSeedContent(string primaryText, string? secondaryText = null)
     {
         var parts = new List<string>();
@@ -1940,49 +1758,6 @@
             parts.Add($"Annotation: {secondaryText.Trim()}");
 
         return string.Join("\n\n", parts);
-    }
-
-    private string GetAiGeneratedSummaryTooltip(SummaryDto summary) =>
-        BuildAiProvenanceTooltip(
-            summary.Model,
-            summary.PromptVersion,
-            summary.CreatedAtUtc,
-            sourceLabel: "AI-generated summary");
-
-    private string GetDuplicateCheckProvenanceTooltip() =>
-        HasDuplicateCheckProvenance
-            ? BuildAiProvenanceTooltip(
-                _duplicateCheckModel,
-                _duplicateCheckPromptVersion,
-                _duplicateCheckGeneratedAtUtc,
-                sourceLabel: "AI duplicate check")
-            : "AI-assisted duplicate detection. Detailed provenance is only available after you run a check in this session.";
-
-    private static string BuildAiProvenanceTooltip(
-        string? model,
-        string? promptVersion,
-        DateTime? generatedAtUtc,
-        string? reasoning = null,
-        string sourceLabel = "AI-generated content")
-    {
-        var parts = new List<string> { sourceLabel };
-
-        parts.Add(!string.IsNullOrWhiteSpace(model)
-            ? $"Model: {model}"
-            : "Model not recorded");
-
-        parts.Add("Provider not recorded");
-
-        if (generatedAtUtc.HasValue)
-            parts.Add($"Generated: {generatedAtUtc.Value:yyyy-MM-dd HH:mm} UTC");
-
-        if (!string.IsNullOrWhiteSpace(promptVersion))
-            parts.Add($"Prompt: {promptVersion}");
-
-        if (!string.IsNullOrWhiteSpace(reasoning))
-            parts.Add($"Why: {reasoning}");
-
-        return string.Join(" • ", parts);
     }
 
     private async Task ReloadLinkedOutputsAsync()
@@ -2137,34 +1912,6 @@
         }
     }
 
-    private async Task ExtractActionsAsync()
-    {
-        if (!NoteId.HasValue) return;
-        if (_isDirty)
-        {
-            Snackbar.Add("Save note changes before extracting actions.", Severity.Warning);
-            return;
-        }
-
-        _actionsExtracting = true;
-        try
-        {
-            var created = await ActionItemService.ExtractFromNoteAsync(NoteId.Value);
-            _actions = await ActionItemService.GetByNoteAsync(NoteId.Value);
-            Snackbar.Add(
-                created.Count == 0 ? "No new actions were found." : $"Extracted {created.Count} action{(created.Count == 1 ? string.Empty : "s")}.",
-                created.Count == 0 ? Severity.Info : Severity.Success);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Could not extract actions: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            _actionsExtracting = false;
-        }
-    }
-
     private async Task OpenPromotionAsync(ActionItemDto action)
     {
         var parameters = new DialogParameters<PromoteActionItemDialog>
@@ -2241,132 +1988,6 @@
             _summariesLoading = false;
         }
     }
-
-    /// <summary>Generates an AI summary for the current note and saves it as a summary layer.</summary>
-    private async Task GenerateAiSummaryAsync()
-    {
-        if (_originalNote is null) return;
-
-        _summaryGenerating = true;
-        try
-        {
-            var content = $"{_model.Title}\n\n{_model.Content}";
-            var result = await AiAssistant.SummarizeAsync(content);
-            if (!result.Success)
-            {
-                Snackbar.Add($"AI summary failed: {result.ErrorMessage}", Severity.Warning);
-                return;
-            }
-            await SummaryService.CreateAsync(new CreateSummaryDto(
-                _originalNote.Id,
-                result.Content,
-                IsAiGenerated: true,
-                Model: result.Model,
-                PromptVersion: result.PromptVersion));
-            _summaries = await SummaryService.GetByNoteAsync(_originalNote.Id);
-            Snackbar.Add("AI summary generated.", Severity.Success);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Could not generate AI summary: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            _summaryGenerating = false;
-            StateHasChanged();
-        }
-    }
-
-    // ── Duplicate detection helpers ───────────────────────────────────────────
-
-    /// <summary>Fetches the 20 most-recent candidate notes and asks the AI to identify potential duplicates.</summary>
-    private async Task CheckDuplicatesAsync()
-    {
-        if (!NoteId.HasValue) return;
-
-        _dupChecking = true;
-        _dupChecked  = false;
-        _duplicates.Clear();
-        _duplicateCheckModel = null;
-        _duplicateCheckPromptVersion = null;
-        _duplicateCheckGeneratedAtUtc = null;
-        StateHasChanged();
-
-        try
-        {
-            var allNotes = await NoteService.GetAllAsync();
-            var candidates = allNotes
-                .Where(n => n.Id != NoteId.Value)
-                .Take(20)
-                .Select(n => (Id: n.Id, Title: n.Title, Summary: n.AiSummary))
-                .ToList();
-
-            var result = await AiAssistant.DetectDuplicatesAsync(
-                _model.Title, _model.Content, candidates);
-
-            if (!result.Success)
-            {
-                Snackbar.Add(result.ErrorMessage ?? "AI assistant is not configured.", Severity.Warning);
-                return;
-            }
-
-            _duplicateCheckModel = result.Model;
-            _duplicateCheckPromptVersion = result.PromptVersion;
-            _duplicateCheckGeneratedAtUtc = DateTime.UtcNow;
-
-            var ids = string.IsNullOrWhiteSpace(result.Content)
-                ? []
-                : JsonSerializer.Deserialize<List<string>>(result.Content) ?? [];
-
-            var idSet = ids
-                .Select(s => Guid.TryParse(s, out var g) ? g : (Guid?)null)
-                .Where(g => g.HasValue)
-                .Select(g => g!.Value)
-                .ToHashSet();
-
-            _duplicates = allNotes
-                .Where(n => idSet.Contains(n.Id))
-                .Select(n => (n.Id, n.Title))
-                .ToList();
-
-            _dupChecked = true;
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Could not check for duplicates: {ex.Message}", Severity.Error);
-        }
-        finally
-        {
-            _dupChecking = false;
-        }
-    }
-
-    /// <summary>Creates a Duplicate relationship between the current note and the given note, then removes it from the list.</summary>
-    private async Task LinkAsSimilarAsync(Guid duplicateId)
-    {
-        if (!NoteId.HasValue) return;
-        try
-        {
-            await RelationshipService.CreateAsync(new CreateNoteRelationshipDto(
-                NoteId.Value, duplicateId, RelationshipType.Duplicate));
-            _links = await RelationshipService.GetForNoteAsync(NoteId.Value);
-            DismissDuplicate(duplicateId);
-            Snackbar.Add("Note linked as duplicate.", Severity.Success);
-        }
-        catch (InvalidOperationException)
-        {
-            // Relationship already exists — just remove from the displayed list
-            DismissDuplicate(duplicateId);
-            Snackbar.Add("Notes are already linked.", Severity.Info);
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Could not link note: {ex.Message}", Severity.Error);
-        }
-    }
-
-    private void DismissDuplicate(Guid id) =>
-        _duplicates = _duplicates.Where(d => d.Id != id).ToList();
 
     private void ToggleImagesExpanded() => _imagesExpanded = !_imagesExpanded;
 

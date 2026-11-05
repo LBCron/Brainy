@@ -97,20 +97,6 @@
                             : $"{_planUsage.ActiveProjectCount} (unlimited)")
                     </strong>
                 </div>
-                <div>
-                    <span class="account-manage__meta-label">AI features</span>
-                    <strong>@(_planUsage.AiAllowance.AiAvailableOnPlan ? "Included" : "Not included on this plan")</strong>
-                </div>
-                <div>
-                    <span class="account-manage__meta-label">AI allowance this period</span>
-                    <strong>
-                        @(!_planUsage.AiAllowance.AiAvailableOnPlan
-                            ? "—"
-                            : _planUsage.AiAllowance.Limit.HasValue
-                                ? $"{_planUsage.AiAllowance.Used} / {_planUsage.AiAllowance.Limit} requests"
-                                : $"{_planUsage.AiAllowance.Used} requests used (unlimited for now)")
-                    </strong>
-                </div>
             </div>
 
             @if (_planUsage.ProjectLimitReached)
@@ -131,17 +117,6 @@
                     Archive them or upgrade to edit them again.
                 </MudAlert>
             }
-
-            @if (_planUsage.AiAllowance.AiAvailableOnPlan && _planUsage.AiAllowance.PeriodResetsAtUtc.HasValue)
-            {
-                <p class="account-manage__status">AI allowance resets @_planUsage.AiAllowance.PeriodResetsAtUtc.Value.ToString("MMM d, yyyy") (UTC).</p>
-            }
-
-            <p class="account-manage__status">
-                @(_planUsage.AiAllowance.BringYourOwnKeyAllowed
-                    ? "Bringing your own AI provider key is supported as a configuration option and bypasses hosted usage entirely — contact us to set it up."
-                    : "Bringing your own AI provider key is not available on this plan.")
-            </p>
 
             @if (_planUsage.TrialEndsAtUtc.HasValue)
             {
@@ -262,7 +237,7 @@
                     <p>
                         Brainy records privacy-safe usage signals (like "a note was captured" or "a search
                         returned no results") to improve the product. It never records your note, task, or
-                        output content, search text, or AI prompts and responses. See the
+                        output content or search text. See the
                         <MudLink Href="/data-dictionary" Target="_blank">full data dictionary</MudLink>
                         for exactly what is tracked, why, and for how long.
                     </p>
@@ -290,7 +265,7 @@
                     <h2>Starter Mode</h2>
                     <p>
                         Trims the navigation to Today, Inbox, Projects and Search so a new account can find its
-                        footing. Advanced planning, analytics and AI surfaces stay one click away behind
+                        footing. Advanced planning, analytics surfaces stay one click away behind
                         "Show full navigation" — nothing is removed, only decluttered. Turn it off any time for
                         full access.
                     </p>
@@ -569,7 +544,7 @@
 
             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="account-manage__notice">
                 Images are included as base64 with SHA-256 checksums. Brainy's account credentials,
-                password hashes, session tokens, configured AI provider keys, and application secrets
+                password hashes, session tokens, and application secrets
                 are excluded. Content you authored is exported as stored, so a secret written in a note
                 or source URL will still be present. Store the file securely.
             </MudAlert>
@@ -622,7 +597,7 @@
                 This complements the JSON export above; it is for reading and using your data
                 elsewhere, not for re-importing into Brainy. Runs as a background job so large
                 accounts export without tying up this page — a download link appears here when it
-                finishes. Never includes account credentials, application secrets, AI-provider keys,
+                finishes. Never includes account credentials, application secrets,
                 or analytics identifiers.
             </MudAlert>
 
@@ -754,11 +729,11 @@
 
         <MudPaper Class="account-manage__card" Elevation="0">
             <div class="account-manage__card-heading">
-                <MudIcon Icon="@Icons.Material.Outlined.SmartToy" aria-hidden="true" />
+                <MudIcon Icon="@Icons.Material.Outlined.Cable" aria-hidden="true" />
                 <div>
-                    <h2>AI assistant access (MCP)</h2>
+                    <h2>MCP client access</h2>
                     <p>
-                        Connect an AI assistant — Claude, GitHub Copilot, or ChatGPT — to your Brainy
+                        Connect an MCP client to your Brainy
                         knowledge over the Model Context Protocol. Issue one token per client and paste
                         it into that client's MCP configuration.
                     </p>
@@ -1579,7 +1554,7 @@
 
         var confirmed = await DialogService.ShowMessageBox(
             "Revoke MCP token",
-            $"The assistant using \"{tokenName}\" will lose access immediately. Continue?",
+            $"The client using \"{tokenName}\" will lose access immediately. Continue?",
             yesText: "Revoke",
             cancelText: "Cancel");
 

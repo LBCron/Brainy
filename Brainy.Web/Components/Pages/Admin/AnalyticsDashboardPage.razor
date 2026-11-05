@@ -22,7 +22,7 @@
         <header class="analytics-dashboard__header">
             <h1>Internal product analytics</h1>
             <p class="mud-text-secondary">
-                Aggregate, cross-user metrics answering activation, retrieval, retention, and AI-usage
+                Aggregate, cross-user metrics answering activation, retrieval, and retention
                 questions. This view is intentionally not scoped to a single user &mdash; see
                 <code>AnalyticsService</code> query methods for the aggregation. Data comes from the
                 <a href="/data-dictionary">analytics data dictionary</a> event catalogue.
@@ -39,7 +39,6 @@
             var reuse = snapshot.Reuse;
             var search = snapshot.Search;
             var weeklyReview = snapshot.WeeklyReview;
-            var ai = snapshot.Ai;
             var retention = snapshot.Retention;
 
             <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-2">
@@ -135,24 +134,6 @@
                     </MudPaper>
                 </MudItem>
 
-                <MudItem xs="12" md="6">
-                    <MudPaper Class="pa-4" Elevation="0" Outlined="true">
-                        <MudText Typo="Typo.h6">AI usage</MudText>
-                        <MudSimpleTable Dense="true">
-                            <tbody>
-                                <tr><td>Requests submitted</td><td>@ai.RequestsSubmitted</td></tr>
-                                <tr><td>Requests failed</td><td>@ai.RequestsFailed (@FormatRate(ai.FailureRate))</td></tr>
-                                <tr><td>Suggestions reviewed</td><td>@ai.SuggestionsReviewed</td></tr>
-                                <tr><td>Suggestions edited before use</td><td>@ai.SuggestionsEdited (@FormatRate(ai.EditRate))</td></tr>
-                            </tbody>
-                        </MudSimpleTable>
-                        <MudText Typo="Typo.caption" Class="mud-text-secondary mt-2">
-                            Plan-conversion and cost-per-paid-user metrics are not shown: Brainy has no
-                            billing/subscription system today, so those events are reserved but unused.
-                        </MudText>
-                    </MudPaper>
-                </MudItem>
-
                 <MudItem xs="12">
                     <MudPaper Class="pa-4" Elevation="0" Outlined="true">
                         <MudText Typo="Typo.h6">Retention (approximate)</MudText>
@@ -186,7 +167,6 @@
         KnowledgeReuseDto Reuse,
         SearchQualityDto Search,
         WeeklyReviewSummaryDto WeeklyReview,
-        AiUsageSummaryDto Ai,
         RetentionSummaryDto Retention);
 
     protected override async Task OnInitializedAsync()
@@ -212,7 +192,6 @@
             await AnalyticsService.GetKnowledgeReuseSummaryAsync(),
             await AnalyticsService.GetSearchQualityAsync(),
             await AnalyticsService.GetWeeklyReviewSummaryAsync(),
-            await AnalyticsService.GetAiUsageSummaryAsync(),
             await AnalyticsService.GetRetentionSummaryAsync());
     }
 

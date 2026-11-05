@@ -316,7 +316,7 @@
     private static string ReasonLabel(NoteRevisionReason reason) => reason switch
     {
         NoteRevisionReason.UserEdit => "Edited",
-        NoteRevisionReason.AiGeneration => "AI generated",
+        NoteRevisionReason.AiGeneration => "Generated",
         NoteRevisionReason.Import => "Imported",
         NoteRevisionReason.OfflineSync => "Synced offline",
         NoteRevisionReason.Restore => "Restored",
@@ -326,7 +326,7 @@
     private static string ReasonIcon(NoteRevisionReason reason) => reason switch
     {
         NoteRevisionReason.UserEdit => Icons.Material.Outlined.Edit,
-        NoteRevisionReason.AiGeneration => Icons.Material.Outlined.AutoAwesome,
+        NoteRevisionReason.AiGeneration => Icons.Material.Outlined.Update,
         NoteRevisionReason.Import => Icons.Material.Outlined.FileDownload,
         NoteRevisionReason.OfflineSync => Icons.Material.Outlined.CloudSync,
         NoteRevisionReason.Restore => Icons.Material.Outlined.SettingsBackupRestore,

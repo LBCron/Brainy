@@ -7,7 +7,7 @@ namespace Brainy.Web.Tests.Markup;
 /// The Resume Context panel (issue #305) sits inside the authenticated Today experience
 /// behind full Blazor Server interactivity, which is out of reach for an HttpClient-based
 /// test (see <see cref="ProductionSurface.ProductionSurfaceTests"/> for what that boundary
-/// actually covers). Following the same approach as <see cref="AiTransparencyDiscoverabilityTests"/>,
+/// actually covers). Following the same approach as the other markup tests,
 /// these tests read the raw Razor source to verify the panel is actually wired into the
 /// current-focus card and that its guardrails are present in markup, not just in a service
 /// that could silently go unused.
