@@ -68,7 +68,7 @@ jobs:
     # <IsTestProject>false</IsTestProject> specifically so `dotnet test`/`dotnet test <solution>`
     # (this job's own included) never picks it up; it is invoked directly here via `dotnet
     # vstest` against the built test assembly instead.
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     services:
       sqlserver:
